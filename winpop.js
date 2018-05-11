@@ -6,6 +6,11 @@ $(document).ready(function(){
 
 var map = {};
 
+/*
+  TODO:
+    *Add scene handler
+*/
+
 function createBackground(){
   $("body").append($("<div>").attr("id", "winpopBack").css({
     "min-height":"100vh",
@@ -39,11 +44,14 @@ function registerWindows(){
   });
 }
 
-
 function applyAtrributes(tag){
   map[tag].addClass("winpop");
-  map[tag].css("opacity", "0");
   map[tag].css("position", "fixed");
+  map[tag].css("padding-top", "2vh");
+  map[tag].css("padding-bottom", "2vh");
+  map[tag].css("padding-left", "2vw");
+  map[tag].css("padding-right", "2vw");
+
   //map[tag].css("position", "fixed");
   map[tag].css("z-index", "4");
   if(isUndefined(tag, "styling")){
