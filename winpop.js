@@ -4,12 +4,6 @@ $(document).ready(function(){
   registerButtons();
 });
 
-var map = {};
-
-/*
-  TODO:
-    *Add scene handler
-*/
 
 function createBackground(){
   $("body").append($("<div>").attr("id", "winpopBack").css({
@@ -39,9 +33,35 @@ function registerWindows(){
       console.log("Error: tag "+tag+" was already used!");
     }else{
       map[tag]=$(this);
+      registerScenes(tag);
       applyAtrributes(tag);
     }
   });
+}
+
+function  registerScenes(tag){
+  if(map[tag].children("[scene]").length != 0){
+     if(map[tag].children("[scene=default]").length != 1){
+       console.log("Warning: window with tag "+tag+" has no unique default scene!");
+     }
+     map[tag].scenes={};
+  }
+  map[tag].children("[scene]").each(function(){
+    var scene = $(this).attr("scene");
+
+    if(map[tag].scenes[scene] != undefined){
+      console.log("Error: window with tag "+tag+" has scene "+scene+" defined multiple times");
+    }else if(scene==""){
+      console.log("Error: window with tag "+tag+" has scene without id");
+    }else{
+      //console.log(scene);
+      map[tag].scenes[scene] = $(this);
+      applySceneAttributes($(this));
+    }
+  });
+  if(map[tag].scenes != undefined){
+    registerSceneButtons(tag);
+  }
 }
 
 function applyAtrributes(tag){
@@ -99,6 +119,17 @@ function applyAtrributes(tag){
   map[tag].css("margin", "0 auto");
 }
 
+function applySceneAttributes(scene){
+  scene.css({
+    "position":"relative",
+    "height":"100%",
+    "width":"100%"
+  });
+  if(scene.attr("styling") == undefined){
+    scene.css("display","none")
+  }
+}
+
 function isUndefined(tag, property){
   return map[tag].attr(property) == undefined;
 }
@@ -111,35 +142,61 @@ function getWindow(tag){
   }
 }
 
+function showWindow(tag, scene="default"){
+  map[tag].attr("active", "1");
+  map[tag].css("display", "block");
+  $("#winpopBack").css("display", "block");
+  if(map[tag].scenes != undefined){
+    map[tag].scenes[scene].css("display","block");
+  }
+  map[tag].animate({
+    opacity:1
+  });
+
+  $("#winpopBack").animate({
+    opacity:1
+  });
+}
+
+function hideWindow(tag){
+  map[tag].attr("active", "0");
+  map[tag].animate({
+    opacity:0
+  }, complete = function(){
+    map[tag].css("display", "none");
+  });
+  $("#winpopBack").animate({
+    opacity:0
+  }, complete = function(){
+    $("#winpopBack").css("display", "none");
+  });
+  $("[scene]").css("display","none");
+}
+
 function toggleWindow(tag){
   var opacity = map[tag].css("opacity");
   if(parseInt(opacity) == 1){
-    console.log("k");
-    map[tag].attr("active", "0");
-    map[tag].animate({
-      opacity:0
-    }, complete = function(){
-      map[tag].css("display", "none");
-    });
-    $("#winpopBack").animate({
-      opacity:0
-    }, complete = function(){
-      $("#winpopBack").css("display", "none");
-    });
+    //console.log("k");
+    hideWindow(tag);
   }else{
-    console.log("kk");
-    map[tag].attr("active", "1");
-    map[tag].css("display", "block");
-    $("#winpopBack").css("display", "block");
-
-    map[tag].animate({
-      opacity:1
-    });
-
-    $("#winpopBack").animate({
-      opacity:1
-    });
+    //console.log("kk");
+    showWindow(tag);
   }
+}
+
+function changeScene(tag, scene){
+  if(map[tag].scenes[scene]==undefined){
+    console.log("Error: no scene with id "+scene + " in window with tag "+tag);
+  }else{
+    $("[scene]").css("display","none");
+    map[tag].scenes[scene].css("display","block");
+  }
+}
+
+function registerSceneButtons(win){
+  $("[tag="+win+"] [setScene]").each(function(){
+    $(this).click(function(){changeScene(win, $(this).attr("setScene"))});
+  });
 }
 
 function registerButtons(){
