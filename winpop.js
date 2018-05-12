@@ -185,10 +185,12 @@ function hideWindow(tag){
   }, complete = function(){
     $("#winpopBack").css("display", "none");
   });
-  var scene =   map[tag].scenes[$("[scene][active=1]").attr("scene")];
-  scene.destroy();
-  scene.scene.attr("active", "0");
-  scene.scene.css("display", "none");
+  if(map[tag].scenes != undefined){
+    var scene =   map[tag].scenes[$("[scene][active=1]").attr("scene")];
+    scene.destroy();
+    scene.scene.attr("active", "0");
+    scene.scene.css("display", "none");
+  }
 }
 
 function toggleWindow(tag){
