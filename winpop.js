@@ -4,6 +4,8 @@ $(document).ready(function(){
   registerButtons();
 });
 
+map = {};
+
 
 function createBackground(){
   $("body").append($("<div>").attr("id", "winpopBack").css({
@@ -32,7 +34,10 @@ function registerWindows(){
     }else if(map[tag]!=undefined){
       console.log("Error: tag "+tag+" was already used!");
     }else{
-      map[tag]=$(this);
+      map[tag]={};
+      map[tag].window=$(this);
+      map[tag].create = function(){};
+      map[tag].destroy= function(){};
       registerScenes(tag);
       applyAtrributes(tag);
     }
@@ -40,13 +45,13 @@ function registerWindows(){
 }
 
 function  registerScenes(tag){
-  if(map[tag].children("[scene]").length != 0){
-     if(map[tag].children("[scene=default]").length != 1){
+  if(map[tag].window.children("[scene]").length != 0){
+     if(map[tag].window.children("[scene=default]").length != 1){
        console.log("Warning: window with tag "+tag+" has no unique default scene!");
      }
      map[tag].scenes={};
   }
-  map[tag].children("[scene]").each(function(){
+  map[tag].window.children("[scene]").each(function(){
     var scene = $(this).attr("scene");
 
     if(map[tag].scenes[scene] != undefined){
@@ -55,8 +60,11 @@ function  registerScenes(tag){
       console.log("Error: window with tag "+tag+" has scene without id");
     }else{
       //console.log(scene);
-      map[tag].scenes[scene] = $(this);
-      applySceneAttributes($(this));
+      map[tag].scenes[scene] = {};
+      map[tag].scenes[scene].scene = $(this);
+      map[tag].scenes[scene].create=function(){};
+      map[tag].scenes[scene].destroy=function(){};
+      applySceneAttributes(map[tag].scenes[scene]);
     }
   });
   if(map[tag].scenes != undefined){
@@ -65,91 +73,96 @@ function  registerScenes(tag){
 }
 
 function applyAtrributes(tag){
-  map[tag].addClass("winpop");
-  map[tag].css("position", "fixed");
-  map[tag].css("padding-top", "2vh");
-  map[tag].css("padding-bottom", "2vh");
-  map[tag].css("padding-left", "2vw");
-  map[tag].css("padding-right", "2vw");
+  map[tag].window.addClass("winpop");
+  map[tag].window.css("position", "fixed");
+  map[tag].window.css("padding-top", "2vh");
+  map[tag].window.css("padding-bottom", "2vh");
+  map[tag].window.css("padding-left", "2vw");
+  map[tag].window.css("padding-right", "2vw");
 
-  //map[tag].css("position", "fixed");
-  map[tag].css("z-index", "4");
+  //map[tag].window.css("position", "fixed");
+  map[tag].window.css("z-index", "4");
   if(isUndefined(tag, "styling")){
-    map[tag].css("opacity", "0");
-    map[tag].css("display", "none");
+    map[tag].window.css("opacity", "0");
+    map[tag].window.css("display", "none");
 
   }else{
-    map[tag].css("border", "solid black 3px")
+    map[tag].window.css("border", "solid black 3px")
 
   }
 
   if(isUndefined(tag, "width")){
-      map[tag].css("min-width", "40vw");
-      map[tag].css("width", "40vw");
+      map[tag].window.css("min-width", "40vw");
+      map[tag].window.css("width", "40vw");
 
-      map[tag].css("left", "30vw");
+      map[tag].window.css("left", "30vw");
 
 
   }else{
-    map[tag].css("min-width", map[tag].attr("width")+"vw");
-    map[tag].css("width", map[tag].attr("width")+"vw");
+    map[tag].window.css("min-width", map[tag].window.attr("width")+"vw");
+    map[tag].window.css("width", map[tag].window.attr("width")+"vw");
 
-    map[tag].css("left", (parseInt(50 - map[tag].attr("width")/2))+"vw");
+    map[tag].window.css("left", (parseInt(50 - map[tag].window.attr("width")/2))+"vw");
   }
 
   if(isUndefined(tag, "height")){
-      map[tag].css("min-height", "70vh");
-      map[tag].css("height", "70vh");
+      map[tag].window.css("min-height", "70vh");
+      map[tag].window.css("height", "70vh");
 
   }else{
-    map[tag].css("min-height", map[tag].attr("height")+"vh");
-    map[tag].css("height", map[tag].attr("height")+"vh");
+    map[tag].window.css("min-height", map[tag].window.attr("height")+"vh");
+    map[tag].window.css("height", map[tag].window.attr("height")+"vh");
   }
 
   if(isUndefined(tag, "back")){
-    map[tag].attr("back", "#0008");
+    map[tag].window.attr("back", "#0008");
   }
 
   if(isUndefined(tag, "fill")){
-    map[tag].css("background-color", "white");
+    map[tag].window.css("background-color", "white");
   }else{
-    map[tag].css("background-color", map[tag].attr("fill"));
+    map[tag].window.css("background-color", map[tag].window.attr("fill"));
   }
 
-  map[tag].css("margin", "0 auto");
+  map[tag].window.css("margin", "0 auto");
 }
 
 function applySceneAttributes(scene){
-  scene.css({
+  var sceneEl = scene.scene
+  sceneEl.css({
     "position":"relative",
     "height":"100%",
     "width":"100%"
   });
-  if(scene.attr("styling") == undefined){
-    scene.css("display","none")
+  if(sceneEl.attr("styling") == undefined){
+    sceneEl.css("display","none")
   }
 }
 
 function isUndefined(tag, property){
-  return map[tag].attr(property) == undefined;
+  return map[tag].window.attr(property) == undefined;
 }
 
 function getWindow(tag){
-  if(map[tag] == undefined){
+  if(map[tag].window == undefined){
     console.log("Error: no window with that tag was defined");
   }else{
-    return map[tag];
+    return map[tag].window;
   }
 }
 
 function showWindow(tag, scene="default"){
-  map[tag].attr("active", "1");
-  map[tag].css("display", "block");
+  map[tag].create();
+
+  map[tag].window.attr("active", "1");
+  map[tag].window.css("display", "block");
   $("#winpopBack").css("display", "block");
   if(map[tag].scenes != undefined){
-    map[tag].scenes[scene].css("display","block");
+    /*map[tag].scenes[scene].scene.css("display","block");
+    map[tag].scenes[scene].create();*/
+    changeScene(tag, scene);
   }
-  map[tag].animate({
+  map[tag].window.animate({
     opacity:1
   });
 
@@ -159,27 +172,33 @@ function showWindow(tag, scene="default"){
 }
 
 function hideWindow(tag){
-  map[tag].attr("active", "0");
-  map[tag].animate({
+  map[tag].destroy();
+
+  map[tag].window.attr("active", "0");
+  map[tag].window.animate({
     opacity:0
   }, complete = function(){
-    map[tag].css("display", "none");
+    map[tag].window.css("display", "none");
   });
   $("#winpopBack").animate({
     opacity:0
   }, complete = function(){
     $("#winpopBack").css("display", "none");
   });
-  $("[scene]").css("display","none");
+  var scene =   map[tag].scenes[$("[scene][active=1]").attr("scene")];
+  scene.destroy();
+  scene.scene.attr("active", "0");
+  scene.scene.css("display", "none");
 }
 
 function toggleWindow(tag){
-  var opacity = map[tag].css("opacity");
+  var opacity = map[tag].window.css("opacity");
   if(parseInt(opacity) == 1){
     //console.log("k");
     hideWindow(tag);
   }else{
     //console.log("kk");
+
     showWindow(tag);
   }
 }
@@ -188,8 +207,15 @@ function changeScene(tag, scene){
   if(map[tag].scenes[scene]==undefined){
     console.log("Error: no scene with id "+scene + " in window with tag "+tag);
   }else{
-    $("[scene]").css("display","none");
-    map[tag].scenes[scene].css("display","block");
+    var old = $("[scene][active=1]").attr("scene");
+    if(old != undefined){
+      map[tag].scenes[old].destroy();
+      map[tag].scenes[old].scene.css("display", "none");
+      map[tag].scenes[old].scene.attr("active", "0");
+    }
+    map[tag].scenes[scene].create();
+    map[tag].scenes[scene].scene.attr("active", "1");
+    map[tag].scenes[scene].scene.css("display","block");
   }
 }
 
@@ -202,7 +228,7 @@ function registerSceneButtons(win){
 function registerButtons(){
   $("[toggleWindow]").each(function(){
     tag = $(this).attr("toggleWindow");
-    if(map[tag]==undefined){
+    if(map[tag].window==undefined){
       console.log("Error: Button has wrong tag");
     }else{
       $(this).click(function(){
@@ -210,4 +236,40 @@ function registerButtons(){
       })
     }
   });
+}
+
+function onCreateWindow(tag, handler){
+  if(map[tag]!=undefined){
+    map[tag].create = handler;
+  }else{
+    console.log("Error: cannot set onCreate because there is no window with tag "+tag);
+  }
+}
+
+function onDestroyWindow(tag, handler){
+  if(map[tag] != undefined){
+    map[tag].destroy = handler;
+  }else{
+    console.log("Error: cannot set onDestroy because there is no window with tag "+tag);
+  }
+}
+
+function onCreateScene(tag, scene, handler){
+  if(map[tag] == undefined){
+    console.log("Error: cannot set onCreate for scene "+scene+" because there is no window with tag "+tag);
+  }else if(map[tag].scenes[scene] == undefined){
+    console.log("Error: cannot set onCreate because there is no scene "+scene+" in window with tag "+tag);
+  }else{
+    map[tag].scenes[scene].create = handler;
+  }
+}
+
+function onDestroyScene(tag, scene, handler){
+  if(map[tag] == undefined){
+    console.log("Error: cannot set onDestroy for scene "+scene+" because there is no window with tag "+tag);
+  }else if(map[tag].scenes[scene] == undefined){
+    console.log("Error: cannot set onDestroy because there is no scene "+scene+" in window with tag "+tag);
+  }else{
+    map[tag].scenes[scene].destroy = handler;
+  }
 }
