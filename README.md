@@ -1,6 +1,6 @@
 <h1>Winpop</h1><br>
 A library for 'pop-up' windows
-<h2 style="color:red">Requires JQuery</h2>
+<h4 style="color:red">Requires JQuery</h2>
 <br><br>
 <h3>Installation</h3>
 Just download the js file, place it and import it
