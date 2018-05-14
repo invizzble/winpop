@@ -80,8 +80,8 @@ function applyAtrributes(tag){
   map[tag].window.css("padding-left", "2vw");
   map[tag].window.css("padding-right", "2vw");
 
-  //map[tag].window.css("position", "fixed");
   map[tag].window.css("z-index", "4");
+
   if(isUndefined(tag, "styling")){
     map[tag].window.css("opacity", "0");
     map[tag].window.css("display", "none");
@@ -95,14 +95,21 @@ function applyAtrributes(tag){
       map[tag].window.css("min-width", "40vw");
       map[tag].window.css("width", "40vw");
 
-      map[tag].window.css("left", "30vw");
 
-
+      if(isUndefined(tag, "left")){
+        map[tag].window.css("left", "30vw");
+      }else{
+        map[tag].window.css("left", map[tag].window.attr("left")+"vw");
+      }
   }else{
     map[tag].window.css("min-width", map[tag].window.attr("width")+"vw");
     map[tag].window.css("width", map[tag].window.attr("width")+"vw");
 
-    map[tag].window.css("left", (parseInt(50 - map[tag].window.attr("width")/2))+"vw");
+    if(isUndefined(tag, "left")){
+      map[tag].window.css("left", (parseInt(50 - map[tag].window.attr("width")/2))+"vw");
+    }else{
+      map[tag].window.css("left", map[tag].window.attr("left")+"vw");
+    }
   }
 
   if(isUndefined(tag, "height")){
@@ -111,7 +118,7 @@ function applyAtrributes(tag){
       if(isUndefined(tag, "top")){
         map[tag].window.css("top","15vh");
       }else{
-        map[tag].window.css("top", map[tag].attr("top"));
+        map[tag].window.css("top", map[tag].window.attr("top"));
 
       }
 
@@ -121,7 +128,7 @@ function applyAtrributes(tag){
     if(isUndefined(tag, "top")){
       map[tag].window.css("top", (100-map[tag].window.attr("height"))/2 +"vh");
     }else{
-      map[tag].window.css("top", map[tag].attr("top"));
+      map[tag].window.css("top", map[tag].window.attr("top"));
     }
   }
 
