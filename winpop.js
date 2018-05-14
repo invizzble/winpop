@@ -108,10 +108,21 @@ function applyAtrributes(tag){
   if(isUndefined(tag, "height")){
       map[tag].window.css("min-height", "70vh");
       map[tag].window.css("height", "70vh");
+      if(isUndefined(tag, "top")){
+        map[tag].window.css("top","15vh");
+      }else{
+        map[tag].window.css("top", map[tag].attr("top"));
+
+      }
 
   }else{
     map[tag].window.css("min-height", map[tag].window.attr("height")+"vh");
     map[tag].window.css("height", map[tag].window.attr("height")+"vh");
+    if(isUndefined(tag, "top")){
+      map[tag].window.css("top", (100-map[tag].window.attr("height"))/2 +"vh");
+    }else{
+      map[tag].window.css("top", map[tag].attr("top"));
+    }
   }
 
   if(isUndefined(tag, "back")){
