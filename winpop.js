@@ -38,8 +38,12 @@ function registerWindows(){
       map[tag].window=$(this);
       map[tag].create = function(){};
       map[tag].destroy= function(){};
+      var wrapper = $("<div>").addClass("wrapper").html(map[tag].window.html()).css({"position":"relative","widht":"95%","heigh":"95%","margin":"0 auto"});
+      map[tag].window.html("");
       registerScenes(tag);
       applyAtrributes(tag);
+      registerHideButtons(tag);
+      map[tag].window.append(wrapper);
     }
   });
 }
@@ -70,6 +74,12 @@ function  registerScenes(tag){
   if(map[tag].scenes != undefined){
     registerSceneButtons(tag);
   }
+}
+
+function registerHideButtons(tag){
+  map[tag].window.children("[hideWindow]").click(function(){
+    hideWindow(tag);
+  });
 }
 
 function applyAtrributes(tag){
